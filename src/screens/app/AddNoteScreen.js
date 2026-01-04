@@ -1,51 +1,52 @@
 import React from "react";
-import { View, Text, StyleSheet, TextInput } from "react-native";
+import { View, Text, StyleSheet, TextInput, Alert } from "react-native";
 import { colors } from "../../theme/colors";
 import PrimaryButton from "../../components/PrimaryButton";
 
-export default function AddTaskScreen({ navigation }) {
-  const [title, setTitle] = React.useState("");
-  const [due, setDue] = React.useState("");
-  const [desc, setDesc] = React.useState("");
+export default function AddNoteScreen({ navigation, route }) {
+  const onAdd = route?.params?.onAdd;
+
+  const [course, setCourse] = React.useState("");
+  const [text, setText] = React.useState("");
+
+  const save = () => {
+    if (!course.trim() || !text.trim()) {
+      Alert.alert("Missing info", "Please enter course name and your note.");
+      return;
+    }
+    onAdd?.({
+      course: course.trim(),
+      text: text.trim(),
+    });
+    navigation.goBack();
+  };
 
   return (
     <View style={styles.container}>
-      <Text style={styles.title}>Add Task</Text>
-      <Text style={styles.sub}>Create a new task</Text>
+      <Text style={styles.title}>Study Note</Text>
+      <Text style={styles.sub}>Write your course note</Text>
 
-      {/* Title */}
-      <Text style={styles.label}>Title</Text>
+      <Text style={styles.label}>Course</Text>
       <TextInput
-        value={title}
-        onChangeText={setTitle}
-        placeholder="e.g. Study for midterm"
+        value={course}
+        onChangeText={setCourse}
+        placeholder="e.g., Mobile Programming"
         placeholderTextColor={colors.muted}
         style={styles.input}
       />
 
-      {/* Due */}
-      <Text style={styles.label}>Due</Text>
+      <Text style={styles.label}>Note</Text>
       <TextInput
-        value={due}
-        onChangeText={setDue}
-        placeholder="e.g. tomorrow"
+        value={text}
+        onChangeText={setText}
+        placeholder="Write your study note..."
         placeholderTextColor={colors.muted}
-        style={styles.input}
-      />
-
-      {/* Description */}
-      <Text style={styles.label}>Description </Text>
-      <TextInput
-        value={desc}
-        onChangeText={setDesc}
-        placeholder="Short details..."
-        placeholderTextColor={colors.muted}
-        style={[styles.input, { height: 90, textAlignVertical: "top" }]}
+        style={[styles.input, styles.textArea]}
         multiline
       />
 
       <View style={{ height: 16 }} />
-      <PrimaryButton title="Save " onPress={() => navigation.goBack()} />
+      <PrimaryButton title="Save" onPress={save} />
       <View style={{ height: 10 }} />
       <PrimaryButton title="Cancel" variant="ghost" onPress={() => navigation.goBack()} />
     </View>
@@ -63,6 +64,7 @@ const styles = StyleSheet.create({
   },
   title: { color: colors.text, fontSize: 30, fontWeight: "900" },
   sub: { color: colors.muted, fontWeight: "700", marginTop: -2, marginBottom: 10 },
+
   label: { color: colors.muted, fontWeight: "800", marginTop: 10, marginBottom: 6 },
   input: {
     backgroundColor: colors.card,
@@ -73,4 +75,5 @@ const styles = StyleSheet.create({
     color: colors.text,
     fontWeight: "700",
   },
+  textArea: { height: 140, textAlignVertical: "top" },
 });
