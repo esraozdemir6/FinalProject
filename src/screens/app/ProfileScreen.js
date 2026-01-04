@@ -82,7 +82,7 @@ const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: colors.bg,
     paddingHorizontal: 18,
-    paddingTop: 40,
+    paddingTop: 50,
     paddingBottom: 18,
     gap: 12,
   },
