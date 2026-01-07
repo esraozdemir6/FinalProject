@@ -1,8 +1,9 @@
 import React from "react";
-import { View, Text, StyleSheet } from "react-native";
-import { colors } from "../../theme/colors";
+import { View, Text, StyleSheet, Image, Switch } from "react-native";
 import { useAuthStore } from "../../store/authStore";
+import { useThemeStore } from "../../store/themeStore";
 import PrimaryButton from "../../components/PrimaryButton";
+import { colors as lightColors } from "../../theme/colors"; 
 
 function getInitials(email = "") {
   const namePart = email.split("@")[0] || "User";
@@ -14,147 +15,157 @@ function getInitials(email = "") {
 
 export default function ProfileScreen() {
   const { user, logout } = useAuthStore();
+  const { isDark, toggleTheme } = useThemeStore();
 
-  // Later (Firestore) we will replace these with real stats
+  const colors = {
+    ...lightColors,
+    bg: isDark ? "#0B0B10" : lightColors.bg,
+    card: isDark ? "#12121A" : lightColors.card,
+    card2: isDark ? "#171721" : lightColors.card2,
+    text: isDark ? "#F2F2F7" : lightColors.text,
+    muted: isDark ? "#B7B7C6" : lightColors.muted,
+    border: isDark ? "#2A2A36" : lightColors.border,
+    primary: lightColors.primary,
+    primarySoft: isDark ? "#1A1624" : lightColors.primarySoft,
+    accent: lightColors.accent,
+  };
+
   const stats = [
-    { label: "Tasks Today", value: "—" },
-    { label: "Sessions", value: "—" },
-    { label: "Focus Minutes", value: "—" },
+    { label: "Tasks Today", value: "6" },
+    { label: "Sessions", value: "3" },
+    { label: "Focus Hours", value: "4.35" },
   ];
 
   return (
-    <View style={styles.container}>
-      <Text style={styles.title}>Profile</Text>
+    <View style={makeStyles(colors).container}>
+      {/* TOP LOGO AREA */}
+      <View style={makeStyles(colors).top}>
+        <Image
+          source={require("../../../assets/bear.png")}
+          style={makeStyles(colors).logo}
+          resizeMode="contain"
+        />
+        <Text style={makeStyles(colors).brand}>StudyFlow</Text>
+        <Text style={makeStyles(colors).tagline}>Plan • Focus • Achieve</Text>
+      </View>
 
-      {/* User card */}
-      <View style={styles.userCard}>
-        <View style={styles.avatar}>
-          <Text style={styles.avatarText}>{getInitials(user?.email)}</Text>
+      {/* USER CARD */}
+      <View style={makeStyles(colors).userCard}>
+        <View style={makeStyles(colors).avatar}>
+          <Text style={makeStyles(colors).avatarText}>{getInitials(user?.email)}</Text>
         </View>
-
         <View style={{ flex: 1 }}>
-          <Text style={styles.name}>StudyFlow User</Text>
-          <Text style={styles.email}>{user?.email || "Not signed in"}</Text>
+          <Text style={makeStyles(colors).name}>StudyFlow User</Text>
+          <Text style={makeStyles(colors).email} numberOfLines={1}>
+            {user?.email || "Not signed in"}
+          </Text>
         </View>
       </View>
 
-      {/* Stats */}
-      <View style={styles.statsRow}>
+      {/* STATS */}
+      <View style={makeStyles(colors).statsRow}>
         {stats.map((s) => (
-          <View key={s.label} style={styles.statCard}>
-            <Text style={styles.statValue}>{s.value}</Text>
-            <Text style={styles.statLabel}>{s.label}</Text>
+          <View key={s.label} style={makeStyles(colors).statCard}>
+            <Text style={makeStyles(colors).statValue}>{s.value}</Text>
+            <Text style={makeStyles(colors).statLabel}>{s.label}</Text>
           </View>
         ))}
       </View>
 
-      {/* Settings (UI only for now) */}
-      <View style={styles.section}>
-        <Text style={styles.sectionTitle}>Settings</Text>
+      {/* SETTINGS */}
+      <View style={makeStyles(colors).settingsCard}>
+        <Text style={makeStyles(colors).settingsTitle}>Settings</Text>
 
-        <View style={styles.settingRow}>
-          <Text style={styles.settingLeft}>Focus Duration</Text>
-          <Text style={styles.settingRight}>15 / 30 / 45 / 60</Text>
+        <View style={makeStyles(colors).settingRow}>
+          <Text style={makeStyles(colors).settingLeft}>Dark Mode</Text>
+          <Switch
+            value={isDark}
+            onValueChange={toggleTheme}
+            trackColor={{ false: colors.border, true: colors.primarySoft }}
+            thumbColor={isDark ? colors.primary : "#ffffff"}
+          />
         </View>
 
-        <View style={styles.divider} />
+        <View style={makeStyles(colors).divider} />
 
-        <View style={styles.settingRow}>
-          <Text style={styles.settingLeft}>Theme</Text>
-          <Text style={styles.settingRight}>Lilac</Text>
+        <View style={makeStyles(colors).settingRow}>
+          <Text style={makeStyles(colors).settingLeft}>Focus Durations</Text>
+          <Text style={makeStyles(colors).settingRight}>15 / 30 / 45 / 60</Text>
         </View>
       </View>
 
-      {/* Logout */}
+      {/* LOGOUT */}
       <View style={{ marginTop: "auto" }}>
         <PrimaryButton title="Logout" onPress={logout} />
-        <View style={{ height: 10 }} />
-        <Text style={styles.hint}>
-          Next: connect Firebase Auth + Firestore to show real stats.
-        </Text>
       </View>
     </View>
   );
 }
 
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: colors.bg,
-    paddingHorizontal: 18,
-    paddingTop: 50,
-    paddingBottom: 18,
-    gap: 12,
-  },
-  title: {
-    color: colors.text,
-    fontSize: 30,
-    fontWeight: "900",
-  },
+const makeStyles = (colors) =>
+  StyleSheet.create({
+    container: {
+      flex: 1,
+      backgroundColor: colors.bg,
+      paddingHorizontal: 18,
+      paddingTop: 72,
+      paddingBottom: 18,
+      gap: 12,
+    },
 
-  userCard: {
-    flexDirection: "row",
-    gap: 12,
-    alignItems: "center",
-    backgroundColor: colors.card,
-    borderRadius: 24,
-    borderWidth: 1,
-    borderColor: colors.border,
-    padding: 14,
-  },
-  avatar: {
-    width: 56,
-    height: 56,
-    borderRadius: 18,
-    backgroundColor: colors.primarySoft,
-    borderWidth: 1,
-    borderColor: colors.border,
-    alignItems: "center",
-    justifyContent: "center",
-  },
-  avatarText: {
-    color: colors.primary,
-    fontWeight: "900",
-    fontSize: 18,
-    letterSpacing: 0.5,
-  },
-  name: {
-    color: colors.text,
-    fontWeight: "900",
-    fontSize: 16,
-  },
-  email: {
-    color: colors.muted,
-    fontWeight: "700",
-    marginTop: 4,
-  },
+    top: { alignItems: "center", gap: 6, marginBottom: 4 },
+    logo: { width: 110, height: 110 },
+    brand: { color: colors.primary, fontSize: 28, fontWeight: "900" },
+    tagline: { color: colors.muted, fontWeight: "800" },
 
-  statsRow: { flexDirection: "row", gap: 10 },
-  statCard: {
-    flex: 1,
-    backgroundColor: colors.card,
-    borderRadius: 18,
-    borderWidth: 1,
-    borderColor: colors.border,
-    padding: 12,
-    alignItems: "center",
-  },
-  statValue: { color: colors.primary, fontWeight: "900", fontSize: 18 },
-  statLabel: { color: colors.muted, fontWeight: "700", marginTop: 4, fontSize: 12, textAlign: "center" },
+    userCard: {
+      flexDirection: "row",
+      gap: 12,
+      alignItems: "center",
+      backgroundColor: colors.card,
+      borderRadius: 24,
+      borderWidth: 1,
+      borderColor: colors.border,
+      padding: 14,
+    },
+    avatar: {
+      width: 56,
+      height: 56,
+      borderRadius: 18,
+      backgroundColor: colors.primarySoft,
+      borderWidth: 1,
+      borderColor: colors.border,
+      alignItems: "center",
+      justifyContent: "center",
+    },
+    avatarText: { color: colors.primary, fontWeight: "900", fontSize: 18 },
+    name: { color: colors.text, fontWeight: "900", fontSize: 16 },
+    email: { color: colors.muted, fontWeight: "700", marginTop: 4 },
 
-  section: {
-    backgroundColor: colors.card,
-    borderRadius: 24,
-    borderWidth: 1,
-    borderColor: colors.border,
-    padding: 14,
-    gap: 10,
-  },
-  sectionTitle: { color: colors.text, fontWeight: "900", fontSize: 16 },
-  settingRow: { flexDirection: "row", alignItems: "center", justifyContent: "space-between" },
-  settingLeft: { color: colors.muted, fontWeight: "800" },
-  settingRight: { color: colors.primary, fontWeight: "900" },
-  divider: { height: 1, backgroundColor: colors.border, opacity: 0.9 },
+    statsRow: { flexDirection: "row", gap: 10 },
+    statCard: {
+      flex: 1,
+      backgroundColor: colors.card,
+      borderRadius: 18,
+      borderWidth: 1,
+      borderColor: colors.border,
+      padding: 12,
+      alignItems: "center",
+    },
+    statValue: { color: colors.primary, fontWeight: "900", fontSize: 18 },
+    statLabel: { color: colors.muted, fontWeight: "800", marginTop: 4, fontSize: 12, textAlign: "center" },
 
-  hint: { color: colors.muted, fontWeight: "700", textAlign: "center", marginTop: 8 },
-});
+    settingsCard: {
+      backgroundColor: colors.card,
+      borderRadius: 24,
+      borderWidth: 1,
+      borderColor: colors.border,
+      padding: 14,
+      gap: 10,
+    },
+    settingsTitle: { color: colors.text, fontWeight: "900", fontSize: 16 },
+    settingRow: { flexDirection: "row", justifyContent: "space-between", alignItems: "center" },
+    settingLeft: { color: colors.muted, fontWeight: "800" },
+    settingRight: { color: colors.primary, fontWeight: "900" },
+    divider: { height: 1, backgroundColor: colors.border, opacity: 0.9 },
+  });

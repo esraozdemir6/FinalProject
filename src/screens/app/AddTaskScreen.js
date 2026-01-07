@@ -1,53 +1,106 @@
 import React from "react";
 import { View, Text, StyleSheet, TextInput } from "react-native";
 import { colors } from "../../theme/colors";
+import { useThemeStore } from "../../store/themeStore";
 import PrimaryButton from "../../components/PrimaryButton";
 
 export default function AddTaskScreen({ navigation }) {
+  const isDark = useThemeStore((s) => s.isDark);
+
+  const dark = {
+    bg: "#0E0C14",
+    card: "#0B0B10",
+    card2: "#1E1B2E",
+    border: "#2C2842",
+    text: "#F5F4FA",
+    muted: "#A8A4C2",
+  };
+
   const [title, setTitle] = React.useState("");
   const [due, setDue] = React.useState("");
   const [desc, setDesc] = React.useState("");
 
   return (
-    <View style={styles.container}>
-      <Text style={styles.title}>Add Task</Text>
-      <Text style={styles.sub}>Create a new task</Text>
+    <View
+      style={[
+        styles.container,
+        { backgroundColor: isDark ? dark.bg : colors.bg },
+      ]}
+    >
+      <Text style={[styles.title, { color: isDark ? dark.text : colors.text }]}>
+        Add Task
+      </Text>
+      <Text style={[styles.sub, { color: isDark ? dark.muted : colors.muted }]}>
+        Create a new task
+      </Text>
 
       {/* Title */}
-      <Text style={styles.label}>Title</Text>
+      <Text style={[styles.label, { color: isDark ? dark.muted : colors.muted }]}>
+        Title
+      </Text>
       <TextInput
         value={title}
         onChangeText={setTitle}
         placeholder="e.g. Study for midterm"
-        placeholderTextColor={colors.muted}
-        style={styles.input}
+        placeholderTextColor={isDark ? dark.muted : colors.muted}
+        style={[
+          styles.input,
+          {
+            backgroundColor: isDark ? dark.card : colors.card,
+            borderColor: isDark ? dark.border : colors.border,
+            color: isDark ? dark.text : colors.text,
+          },
+        ]}
       />
 
       {/* Due */}
-      <Text style={styles.label}>Due</Text>
+      <Text style={[styles.label, { color: isDark ? dark.muted : colors.muted }]}>
+        Due
+      </Text>
       <TextInput
         value={due}
         onChangeText={setDue}
         placeholder="e.g. tomorrow"
-        placeholderTextColor={colors.muted}
-        style={styles.input}
+        placeholderTextColor={isDark ? dark.muted : colors.muted}
+        style={[
+          styles.input,
+          {
+            backgroundColor: isDark ? dark.card : colors.card,
+            borderColor: isDark ? dark.border : colors.border,
+            color: isDark ? dark.text : colors.text,
+          },
+        ]}
       />
 
       {/* Description */}
-      <Text style={styles.label}>Description </Text>
+      <Text style={[styles.label, { color: isDark ? dark.muted : colors.muted }]}>
+        Description
+      </Text>
       <TextInput
         value={desc}
         onChangeText={setDesc}
         placeholder="Short details..."
-        placeholderTextColor={colors.muted}
-        style={[styles.input, { height: 90, textAlignVertical: "top" }]}
+        placeholderTextColor={isDark ? dark.muted : colors.muted}
+        style={[
+          styles.input,
+          styles.textArea,
+          {
+            backgroundColor: isDark ? dark.card : colors.card,
+            borderColor: isDark ? dark.border : colors.border,
+            color: isDark ? dark.text : colors.text,
+          },
+        ]}
         multiline
       />
 
       <View style={{ height: 16 }} />
-      <PrimaryButton title="Save " onPress={() => navigation.goBack()} />
+      <PrimaryButton title="Save" onPress={() => navigation.goBack()} />
       <View style={{ height: 10 }} />
-      <PrimaryButton title="Cancel" variant="ghost" onPress={() => navigation.goBack()} />
+      <PrimaryButton
+        title="Cancel"
+        variant="ghost"
+        onPress={() => navigation.goBack()}
+      />
     </View>
   );
 }
@@ -72,5 +125,9 @@ const styles = StyleSheet.create({
     padding: 12,
     color: colors.text,
     fontWeight: "700",
+  },
+  textArea: {
+    height: 90,
+    textAlignVertical: "top",
   },
 });

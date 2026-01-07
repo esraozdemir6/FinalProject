@@ -1,6 +1,7 @@
 import React from "react";
 import { View, Text, StyleSheet, Pressable, FlatList } from "react-native";
 import { colors } from "../../theme/colors";
+import { useThemeStore } from "../../store/themeStore";
 import SummaryCard from "../../components/SummaryCard";
 import QuoteCard from "../../components/QuoteCard";
 import NoteCard from "../../components/NoteCard";
@@ -11,6 +12,17 @@ function todayLabel() {
 }
 
 export default function DashboardScreen({ navigation }) {
+  const isDark = useThemeStore((s) => s.isDark);
+
+  const dark = {
+    bg: "#0E0C14",
+    card: "#171523",
+    card2: "#1E1B2E",
+    text: "#F5F4FA",
+    muted: "#A8A4C2",
+    border: "#2C2842",
+  };
+
   const fake = {
     tasksToday: 3,
     completedWeek: 7,
@@ -20,7 +32,13 @@ export default function DashboardScreen({ navigation }) {
   };
 
   const [notes, setNotes] = React.useState([
-    { id: "n1", course: "Mobile Programming", text: "What is State? State in mobile programming refers to data that can change while the application is running and directly affects what is displayed on the user interface. ", dateLabel: todayLabel() },
+    {
+      id: "n1",
+      course: "Mobile Programming",
+      text:
+        "What is State? State in mobile programming refers to data that can change while the application is running and directly affects what is displayed on the user interface.",
+      dateLabel: todayLabel(),
+    },
   ]);
 
   const addNote = ({ course, text }) => {
@@ -31,9 +49,11 @@ export default function DashboardScreen({ navigation }) {
   const deleteNote = (id) => setNotes((prev) => prev.filter((n) => n.id !== id));
 
   return (
-    <View style={styles.container}>
-      <Text style={styles.title}>Dashboard</Text>
-      <Text style={styles.sub}>Your study overview for today</Text>
+    <View style={[styles.container, { backgroundColor: isDark ? dark.bg : colors.bg }]}>
+      <Text style={[styles.title, { color: isDark ? dark.text : colors.text }]}>Dashboard</Text>
+      <Text style={[styles.sub, { color: isDark ? dark.muted : colors.muted }]}>
+        Your study overview for today
+      </Text>
 
       <View style={styles.row}>
         <SummaryCard label="Tasks Today" value={fake.tasksToday} helper="Plan your day" />
@@ -41,7 +61,11 @@ export default function DashboardScreen({ navigation }) {
       </View>
 
       <View style={styles.row}>
-        <SummaryCard label="Focus Minutes Today" value={fake.focusMinutesToday} helper="Pomodoro sessions" />
+        <SummaryCard
+          label="Focus Minutes Today"
+          value={fake.focusMinutesToday}
+          helper="Pomodoro sessions"
+        />
         <SummaryCard label="Streak" value={"—"} helper="Next phase" />
       </View>
 
@@ -49,10 +73,18 @@ export default function DashboardScreen({ navigation }) {
 
       {/* Study Notes header */}
       <View style={styles.notesHeader}>
-        <Text style={styles.notesTitle}>Study Notes</Text>
+        <Text style={[styles.notesTitle, { color: isDark ? dark.text : colors.text }]}>Study Notes</Text>
+
         <Pressable
           onPress={() => navigation.navigate("AddNote", { onAdd: addNote })}
-          style={({ pressed }) => [styles.notesBtn, pressed && { opacity: 0.9 }]}
+          style={({ pressed }) => [
+            styles.notesBtn,
+            {
+              backgroundColor: isDark ? dark.card2 : colors.primarySoft,
+              borderColor: isDark ? dark.border : colors.border,
+            },
+            pressed && { opacity: 0.9 },
+          ]}
         >
           <Text style={styles.notesBtnText}>＋ Add</Text>
         </Pressable>
@@ -64,13 +96,24 @@ export default function DashboardScreen({ navigation }) {
         renderItem={({ item }) => <NoteCard note={item} onDelete={deleteNote} />}
         contentContainerStyle={{ gap: 10, paddingBottom: 10 }}
         ListEmptyComponent={
-          <View style={styles.empty}>
-            <Text style={styles.emptyTitle}>No notes yet</Text>
-            <Text style={styles.emptySub}>Add your first course note.</Text>
+          <View
+            style={[
+              styles.empty,
+              {
+                backgroundColor: isDark ? dark.card : colors.card,
+                borderColor: isDark ? dark.border : colors.border,
+              },
+            ]}
+          >
+            <Text style={[styles.emptyTitle, { color: isDark ? dark.text : colors.text }]}>
+              No notes yet
+            </Text>
+            <Text style={[styles.emptySub, { color: isDark ? dark.muted : colors.muted }]}>
+              Add your first course note.
+            </Text>
           </View>
         }
       />
-
     </View>
   );
 }

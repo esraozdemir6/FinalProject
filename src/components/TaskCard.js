@@ -1,28 +1,69 @@
 import React from "react";
 import { View, Text, StyleSheet, Pressable } from "react-native";
 import { colors } from "../theme/colors";
+import { useThemeStore } from "../store/themeStore";
 
 export default function TaskCard({ task, onToggleComplete }) {
+  const isDark = useThemeStore((s) => s.isDark);
+
+  const dark = {
+    card: "#0B0B10",     
+    card2: "#1E1B2E",
+    border: "#2C2842",
+    text: "#F5F4FA",
+    muted: "#A8A4C2",
+  };
+
   return (
-    <Pressable style={({ pressed }) => [styles.card, pressed && { opacity: 0.95 }]}>
+    <Pressable
+      style={({ pressed }) => [
+        styles.card,
+        {
+          backgroundColor: isDark ? dark.card : colors.card,
+          borderColor: isDark ? dark.border : colors.border,
+          opacity: pressed ? 0.95 : 1,
+        },
+      ]}
+    >
       <View style={styles.left}>
         <Pressable
           onPress={() => onToggleComplete?.(task.id)}
-          style={[styles.check, task.completed && styles.checkOn]}
+          style={[
+            styles.check,
+            {
+              backgroundColor: isDark ? dark.card2 : colors.card2,
+              borderColor: isDark ? dark.border : colors.border,
+            },
+            task.completed && styles.checkOn,
+          ]}
         >
           {task.completed ? <Text style={styles.checkText}>✓</Text> : null}
         </Pressable>
       </View>
 
       <View style={styles.mid}>
-        <Text style={[styles.title, task.completed && styles.done]} numberOfLines={1}>
+        <Text
+          style={[
+            styles.title,
+            {
+              color: isDark ? dark.text : colors.text,
+            },
+            task.completed && styles.done,
+          ]}
+          numberOfLines={1}
+        >
           {task.title}
         </Text>
-        <Text style={styles.meta}>
-  Due: {task.dueLabel}
-</Text>
-      </View>
 
+        <Text
+          style={[
+            styles.meta,
+            { color: isDark ? dark.muted : colors.muted },
+          ]}
+        >
+          Due: {task.dueLabel}
+        </Text>
+      </View>
     </Pressable>
   );
 }
@@ -56,5 +97,4 @@ const styles = StyleSheet.create({
   title: { color: colors.text, fontWeight: "900", fontSize: 15 },
   done: { color: colors.muted, textDecorationLine: "line-through" },
   meta: { color: colors.muted, fontWeight: "700", fontSize: 12 },
-
 });

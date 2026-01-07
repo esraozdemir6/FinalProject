@@ -2,6 +2,7 @@ import React from "react";
 import { View, Text, StyleSheet, Pressable, Dimensions } from "react-native";
 import Svg, { Circle } from "react-native-svg";
 import { colors } from "../../theme/colors";
+import { useThemeStore } from "../../store/themeStore";
 
 const DURATIONS_MIN = [15, 30, 45, 60];
 
@@ -12,10 +13,12 @@ function formatMMSS(totalSeconds) {
 }
 
 export default function PomodoroScreen() {
+  const isDark = useThemeStore((s) => s.isDark);
+
   const [focusMin, setFocusMin] = React.useState(30);
   const focusTotalSeconds = focusMin * 60;
 
-  const [mode, setMode] = React.useState("focus"); 
+  const [mode, setMode] = React.useState("focus");
   const [running, setRunning] = React.useState(false);
 
   const [focusLeft, setFocusLeft] = React.useState(focusTotalSeconds);
@@ -75,9 +78,25 @@ export default function PomodoroScreen() {
     mode === "focus" ? focusLeft / Math.max(1, focusTotalSeconds) : 1;
   const dashOffset = circumference * (1 - progress);
 
+  const dark = {
+    bg: "#0E0C14",
+    card: "#171523",
+    card2: "#1E1B2E",
+    text: "#F5F4FA",
+    muted: "#A8A4C2",
+    border: "#2C2842",
+  };
+
   return (
-    <View style={styles.container}>
-      <Text style={styles.title}>Pomodoro</Text>
+    <View
+      style={[
+        styles.container,
+        { backgroundColor: isDark ? dark.bg : colors.bg },
+      ]}
+    >
+      <Text style={[styles.title, { color: isDark ? dark.text : colors.text }]}>
+        Pomodoro
+      </Text>
 
       {/* Mode pills */}
       <View style={styles.modeRow}>
@@ -85,11 +104,21 @@ export default function PomodoroScreen() {
           onPress={() => switchTo("focus")}
           style={({ pressed }) => [
             styles.modePill,
+            {
+              backgroundColor: isDark ? dark.card : colors.card,
+              borderColor: isDark ? dark.border : colors.border,
+            },
             mode === "focus" && styles.modePillActive,
             pressed && { opacity: 0.92 },
           ]}
         >
-          <Text style={[styles.modeText, mode === "focus" && styles.modeTextActive]}>
+          <Text
+            style={[
+              styles.modeText,
+              { color: isDark ? dark.muted : colors.muted },
+              mode === "focus" && styles.modeTextActive,
+            ]}
+          >
             Focus
           </Text>
         </Pressable>
@@ -98,11 +127,21 @@ export default function PomodoroScreen() {
           onPress={() => switchTo("break")}
           style={({ pressed }) => [
             styles.modePill,
+            {
+              backgroundColor: isDark ? dark.card : colors.card,
+              borderColor: isDark ? dark.border : colors.border,
+            },
             mode === "break" && styles.modePillActive,
             pressed && { opacity: 0.92 },
           ]}
         >
-          <Text style={[styles.modeText, mode === "break" && styles.modeTextActive]}>
+          <Text
+            style={[
+              styles.modeText,
+              { color: isDark ? dark.muted : colors.muted },
+              mode === "break" && styles.modeTextActive,
+            ]}
+          >
             Break (Stopwatch)
           </Text>
         </Pressable>
@@ -113,7 +152,7 @@ export default function PomodoroScreen() {
         <View style={styles.durationRow}>
           {DURATIONS_MIN.map((m) => {
             const active = focusMin === m;
-            const disabled = running; 
+            const disabled = running;
             return (
               <Pressable
                 key={m}
@@ -121,12 +160,22 @@ export default function PomodoroScreen() {
                 onPress={() => selectDuration(m)}
                 style={({ pressed }) => [
                   styles.durationChip,
+                  {
+                    backgroundColor: isDark ? dark.card : colors.card,
+                    borderColor: isDark ? dark.border : colors.border,
+                  },
                   active && styles.durationChipActive,
                   disabled && { opacity: 0.45 },
                   pressed && !disabled && { opacity: 0.92 },
                 ]}
               >
-                <Text style={[styles.durationText, active && styles.durationTextActive]}>
+                <Text
+                  style={[
+                    styles.durationText,
+                    { color: isDark ? dark.muted : colors.muted },
+                    active && styles.durationTextActive,
+                  ]}
+                >
                   {m}m
                 </Text>
               </Pressable>
@@ -136,7 +185,15 @@ export default function PomodoroScreen() {
       )}
 
       {/* Big circle card */}
-      <View style={styles.circleCard}>
+      <View
+        style={[
+          styles.circleCard,
+          {
+            backgroundColor: isDark ? dark.card : colors.card,
+            borderColor: isDark ? dark.border : colors.border,
+          },
+        ]}
+      >
         <View style={{ width: size, height: size }}>
           <Svg width={size} height={size}>
             {/* track */}
@@ -144,7 +201,7 @@ export default function PomodoroScreen() {
               cx={size / 2}
               cy={size / 2}
               r={radius}
-              stroke={colors.border}
+              stroke={isDark ? dark.border : colors.border}
               strokeWidth={stroke}
               fill="transparent"
             />
@@ -167,10 +224,10 @@ export default function PomodoroScreen() {
           </Svg>
 
           <View style={styles.centerText}>
-            <Text style={styles.bigTime}>
+            <Text style={[styles.bigTime, { color: isDark ? dark.text : colors.text }]}>
               {mode === "focus" ? formatMMSS(focusLeft) : formatMMSS(breakElapsed)}
             </Text>
-            <Text style={styles.smallLabel}>
+            <Text style={[styles.smallLabel, { color: isDark ? dark.muted : colors.muted }]}>
               {mode === "focus" ? "Time left" : "Stopwatch"}
             </Text>
             <Text style={styles.miniHint}>
@@ -195,6 +252,10 @@ export default function PomodoroScreen() {
             onPress={reset}
             style={({ pressed }) => [
               styles.ghostBtn,
+              {
+                backgroundColor: isDark ? dark.card2 : colors.card2,
+                borderColor: isDark ? dark.border : colors.border,
+              },
               pressed && { transform: [{ scale: 0.98 }], opacity: 0.95 },
             ]}
           >
@@ -203,8 +264,16 @@ export default function PomodoroScreen() {
         </View>
       </View>
 
-      <View style={styles.noteBox}>
-        <Text style={styles.noteText}>
+      <View
+        style={[
+          styles.noteBox,
+          {
+            backgroundColor: isDark ? dark.card2 : colors.card2,
+            borderColor: isDark ? dark.border : colors.border,
+          },
+        ]}
+      >
+        <Text style={[styles.noteText, { color: isDark ? dark.muted : colors.muted }]}>
           Focus ends → auto switches to Break stopwatch. (Next: save sessions)
         </Text>
       </View>

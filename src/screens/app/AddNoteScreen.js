@@ -1,10 +1,21 @@
 import React from "react";
 import { View, Text, StyleSheet, TextInput, Alert } from "react-native";
 import { colors } from "../../theme/colors";
+import { useThemeStore } from "../../store/themeStore";
 import PrimaryButton from "../../components/PrimaryButton";
 
 export default function AddNoteScreen({ navigation, route }) {
   const onAdd = route?.params?.onAdd;
+  const isDark = useThemeStore((s) => s.isDark);
+
+  const dark = {
+    bg: "#0E0C14",
+    card: "#0B0B10",
+    card2: "#1E1B2E",
+    border: "#2C2842",
+    text: "#F5F4FA",
+    muted: "#A8A4C2",
+  };
 
   const [course, setCourse] = React.useState("");
   const [text, setText] = React.useState("");
@@ -22,33 +33,65 @@ export default function AddNoteScreen({ navigation, route }) {
   };
 
   return (
-    <View style={styles.container}>
-      <Text style={styles.title}>Study Note</Text>
-      <Text style={styles.sub}>Write your course note</Text>
+    <View
+      style={[
+        styles.container,
+        { backgroundColor: isDark ? dark.bg : colors.bg },
+      ]}
+    >
+      <Text style={[styles.title, { color: isDark ? dark.text : colors.text }]}>
+        Study Note
+      </Text>
+      <Text style={[styles.sub, { color: isDark ? dark.muted : colors.muted }]}>
+        Write your course note
+      </Text>
 
-      <Text style={styles.label}>Course</Text>
+      <Text style={[styles.label, { color: isDark ? dark.muted : colors.muted }]}>
+        Course
+      </Text>
       <TextInput
         value={course}
         onChangeText={setCourse}
         placeholder="e.g., Mobile Programming"
-        placeholderTextColor={colors.muted}
-        style={styles.input}
+        placeholderTextColor={isDark ? dark.muted : colors.muted}
+        style={[
+          styles.input,
+          {
+            backgroundColor: isDark ? dark.card : colors.card,
+            borderColor: isDark ? dark.border : colors.border,
+            color: isDark ? dark.text : colors.text,
+          },
+        ]}
       />
 
-      <Text style={styles.label}>Note</Text>
+      <Text style={[styles.label, { color: isDark ? dark.muted : colors.muted }]}>
+        Note
+      </Text>
       <TextInput
         value={text}
         onChangeText={setText}
         placeholder="Write your study note..."
-        placeholderTextColor={colors.muted}
-        style={[styles.input, styles.textArea]}
+        placeholderTextColor={isDark ? dark.muted : colors.muted}
+        style={[
+          styles.input,
+          styles.textArea,
+          {
+            backgroundColor: isDark ? dark.card : colors.card,
+            borderColor: isDark ? dark.border : colors.border,
+            color: isDark ? dark.text : colors.text,
+          },
+        ]}
         multiline
       />
 
       <View style={{ height: 16 }} />
       <PrimaryButton title="Save" onPress={save} />
       <View style={{ height: 10 }} />
-      <PrimaryButton title="Cancel" variant="ghost" onPress={() => navigation.goBack()} />
+      <PrimaryButton
+        title="Cancel"
+        variant="ghost"
+        onPress={() => navigation.goBack()}
+      />
     </View>
   );
 }

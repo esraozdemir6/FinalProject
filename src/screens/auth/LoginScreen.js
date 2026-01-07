@@ -6,8 +6,8 @@ import PrimaryButton from "../../components/PrimaryButton";
 
 export default function LoginScreen({ navigation }) {
   const { login } = useAuthStore();
-  const [email, setEmail] = React.useState("test@mail.com");
-  const [password, setPassword] = React.useState("123456");
+  const [email, setEmail] = React.useState("");
+  const [password, setPassword] = React.useState("");
 
   return (
     <View style={styles.container}>

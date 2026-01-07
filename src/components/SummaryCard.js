@@ -1,13 +1,41 @@
 import React from "react";
 import { View, Text, StyleSheet } from "react-native";
 import { colors } from "../theme/colors";
+import { useThemeStore } from "../store/themeStore";
 
 export default function SummaryCard({ label, value, helper }) {
+  const isDark = useThemeStore((s) => s.isDark);
+
+  const dark = {
+    card: "#0B0B10",     
+    border: "#2C2842",
+    text: "#F5F4FA",
+    muted: "#A8A4C2",
+  };
+
   return (
-    <View style={styles.card}>
-      <Text style={styles.value}>{value}</Text>
-      <Text style={styles.label}>{label}</Text>
-      {!!helper && <Text style={styles.helper}>{helper}</Text>}
+    <View
+      style={[
+        styles.card,
+        {
+          backgroundColor: isDark ? dark.card : colors.card,
+          borderColor: isDark ? dark.border : colors.border,
+        },
+      ]}
+    >
+      <Text style={[styles.label, { color: isDark ? dark.muted : colors.muted }]}>
+        {label}
+      </Text>
+
+      <Text style={[styles.value, { color: isDark ? dark.text : colors.text }]}>
+        {value}
+      </Text>
+
+      {!!helper && (
+        <Text style={[styles.helper, { color: isDark ? dark.muted : colors.muted }]}>
+          {helper}
+        </Text>
+      )}
     </View>
   );
 }
@@ -15,14 +43,21 @@ export default function SummaryCard({ label, value, helper }) {
 const styles = StyleSheet.create({
   card: {
     flex: 1,
-    backgroundColor: colors.card,
-    borderRadius: 18,
     borderWidth: 1,
-    borderColor: colors.border,
+    borderRadius: 18,
     padding: 12,
     gap: 4,
   },
-  value: { color: colors.primary, fontWeight: "900", fontSize: 20 },
-  label: { color: colors.text, fontWeight: "900", fontSize: 13 },
-  helper: { color: colors.muted, fontWeight: "700", fontSize: 12, marginTop: 4 },
+  label: {
+    fontWeight: "800",
+    fontSize: 12,
+  },
+  value: {
+    fontWeight: "900",
+    fontSize: 22,
+  },
+  helper: {
+    fontWeight: "700",
+    fontSize: 12,
+  },
 });

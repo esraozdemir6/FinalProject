@@ -1,6 +1,7 @@
 import React from "react";
 import { View, Text, StyleSheet, Pressable, FlatList } from "react-native";
 import { colors } from "../../theme/colors";
+import { useThemeStore } from "../../store/themeStore";
 import TaskCard from "../../components/TaskCard";
 
 const FILTERS = ["Tasks", "Completed"];
@@ -13,6 +14,17 @@ const INITIAL = [
 ];
 
 export default function TasksScreen({ navigation }) {
+  const isDark = useThemeStore((s) => s.isDark);
+
+  const dark = {
+    bg: "#0E0C14",
+    card: "#171523",
+    card2: "#1E1B2E",
+    text: "#F5F4FA",
+    muted: "#A8A4C2",
+    border: "#2C2842",
+  };
+
   const [filter, setFilter] = React.useState("Tasks");
   const [tasks, setTasks] = React.useState(INITIAL);
 
@@ -27,15 +39,17 @@ export default function TasksScreen({ navigation }) {
 
   const visible = React.useMemo(() => {
     if (filter === "Completed") return tasks.filter((t) => t.completed);
-    return tasks.filter((t) => !t.completed); 
+    return tasks.filter((t) => !t.completed);
   }, [filter, tasks]);
 
   const renderItem = ({ item }) => <TaskCard task={item} onToggleComplete={onToggleComplete} />;
 
   return (
-    <View style={styles.container}>
-      <Text style={styles.title}>Tasks</Text>
-      <Text style={styles.sub}>Manage your tasks and deadlines</Text>
+    <View style={[styles.container, { backgroundColor: isDark ? dark.bg : colors.bg }]}>
+      <Text style={[styles.title, { color: isDark ? dark.text : colors.text }]}>Tasks</Text>
+      <Text style={[styles.sub, { color: isDark ? dark.muted : colors.muted }]}>
+        Manage your tasks and deadlines
+      </Text>
 
       {/* Filters */}
       <View style={styles.filtersRow}>
@@ -47,11 +61,23 @@ export default function TasksScreen({ navigation }) {
               onPress={() => setFilter(f)}
               style={({ pressed }) => [
                 styles.filterPill,
+                {
+                  backgroundColor: isDark ? dark.card : colors.card,
+                  borderColor: isDark ? dark.border : colors.border,
+                },
                 active && styles.filterPillActive,
                 pressed && { opacity: 0.92 },
               ]}
             >
-              <Text style={[styles.filterText, active && styles.filterTextActive]}>{f}</Text>
+              <Text
+                style={[
+                  styles.filterText,
+                  { color: isDark ? dark.muted : colors.muted },
+                  active && styles.filterTextActive,
+                ]}
+              >
+                {f}
+              </Text>
             </Pressable>
           );
         })}
@@ -64,9 +90,21 @@ export default function TasksScreen({ navigation }) {
         renderItem={renderItem}
         contentContainerStyle={{ gap: 10, paddingBottom: 90 }}
         ListEmptyComponent={
-          <View style={styles.empty}>
-            <Text style={styles.emptyTitle}>No tasks here</Text>
-            <Text style={styles.emptySub}>Add a new task to get started.</Text>
+          <View
+            style={[
+              styles.empty,
+              {
+                backgroundColor: isDark ? dark.card : colors.card,
+                borderColor: isDark ? dark.border : colors.border,
+              },
+            ]}
+          >
+            <Text style={[styles.emptyTitle, { color: isDark ? dark.text : colors.text }]}>
+              No tasks here
+            </Text>
+            <Text style={[styles.emptySub, { color: isDark ? dark.muted : colors.muted }]}>
+              Add a new task to get started.
+            </Text>
           </View>
         }
       />

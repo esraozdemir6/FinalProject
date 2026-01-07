@@ -1,47 +1,80 @@
 import React from "react";
 import { View, Text, StyleSheet, Pressable } from "react-native";
 import { colors } from "../theme/colors";
+import { useThemeStore } from "../store/themeStore";
 
 export default function NoteCard({ note, onDelete }) {
+  const isDark = useThemeStore((s) => s.isDark);
+
+  const dark = {
+    card: "#0B0B10",   
+    border: "#2C2842",
+    text: "#F5F4FA",
+    muted: "#A8A4C2",
+  };
+
   return (
-    <View style={styles.card}>
-      <View style={{ flex: 1 }}>
-        <Text style={styles.course} numberOfLines={1}>{note.course}</Text>
-        <Text style={styles.body} numberOfLines={5}>{note.text}</Text>
-        <Text style={styles.meta}>{note.dateLabel}</Text>
+    <View
+      style={[
+        styles.card,
+        {
+          backgroundColor: isDark ? dark.card : colors.card,
+          borderColor: isDark ? dark.border : colors.border,
+        },
+      ]}
+    >
+      <View style={styles.topRow}>
+        <Text style={[styles.course, { color: isDark ? dark.text : colors.text }]}>
+          {note.course}
+        </Text>
+
+        {onDelete && (
+          <Pressable onPress={() => onDelete(note.id)}>
+            <Text style={[styles.delete, { color: isDark ? dark.muted : colors.muted }]}>
+              ✕
+            </Text>
+          </Pressable>
+        )}
       </View>
 
-      <Pressable onPress={() => onDelete?.(note.id)} style={({ pressed }) => [styles.del, pressed && { opacity: 0.7 }]}>
-        <Text style={styles.delText}>✕</Text>
-      </Pressable>
+      <Text style={[styles.body, { color: isDark ? dark.muted : colors.muted }]}>
+        {note.text}
+      </Text>
+
+      <Text style={[styles.date, { color: isDark ? dark.muted : colors.muted }]}>
+        {note.dateLabel}
+      </Text>
     </View>
   );
 }
 
 const styles = StyleSheet.create({
   card: {
-    flexDirection: "row",
-    gap: 10,
-    backgroundColor: colors.card,
     borderWidth: 1,
-    borderColor: colors.border,
     borderRadius: 18,
-    padding: 12,
-    alignItems: "flex-start",
+    padding: 14,
+    gap: 8,
   },
-  course: { color: colors.text, fontWeight: "900", fontSize: 14 },
-  body: { color: colors.muted, fontWeight: "700", marginTop: 6, lineHeight: 18 },
-  meta: { color: colors.muted, fontWeight: "800", marginTop: 8, fontSize: 12, opacity: 0.8 },
-
-  del: {
-    width: 30,
-    height: 30,
-    borderRadius: 12,
-    backgroundColor: colors.card2,
-    borderWidth: 1,
-    borderColor: colors.border,
+  topRow: {
+    flexDirection: "row",
     alignItems: "center",
-    justifyContent: "center",
+    justifyContent: "space-between",
   },
-  delText: { color: colors.primary, fontWeight: "900" },
+  course: {
+    fontWeight: "900",
+    fontSize: 14,
+  },
+  delete: {
+    fontWeight: "900",
+    fontSize: 14,
+  },
+  body: {
+    fontWeight: "700",
+    lineHeight: 20,
+  },
+  date: {
+    fontWeight: "700",
+    fontSize: 12,
+    marginTop: 4,
+  },
 });
