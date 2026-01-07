@@ -15,14 +15,25 @@ function formatMMSS(totalSeconds) {
 export default function PomodoroScreen() {
   const isDark = useThemeStore((s) => s.isDark);
 
+  const dark = {
+    bg: "#0E0C14",
+    card: "#171523",
+    card2: "#1E1B2E",
+    text: "#F5F4FA",
+    muted: "#A8A4C2",
+    border: "#2C2842",
+  };
+
   const [focusMin, setFocusMin] = React.useState(30);
   const focusTotalSeconds = focusMin * 60;
 
-  const [mode, setMode] = React.useState("focus");
+  const [mode, setMode] = React.useState("focus"); 
   const [running, setRunning] = React.useState(false);
 
   const [focusLeft, setFocusLeft] = React.useState(focusTotalSeconds);
   const [breakElapsed, setBreakElapsed] = React.useState(0);
+
+  const [sessions, setSessions] = React.useState([]);
 
   React.useEffect(() => {
     if (!running) return;
@@ -42,10 +53,20 @@ export default function PomodoroScreen() {
     if (mode !== "focus") return;
     if (focusLeft !== 0) return;
 
+    // ✅ Save completed focus session
+    setSessions((prev) => [
+      {
+        id: Date.now().toString(),
+        minutes: focusMin,
+        completedAt: new Date().toLocaleString(),
+      },
+      ...prev,
+    ]);
+
     setRunning(false);
     setMode("break");
     setBreakElapsed(0);
-  }, [focusLeft, mode]);
+  }, [focusLeft, mode, focusMin]);
 
   const startPause = () => setRunning((p) => !p);
 
@@ -74,29 +95,12 @@ export default function PomodoroScreen() {
   const stroke = 16;
   const circumference = 2 * Math.PI * radius;
 
-  const progress =
-    mode === "focus" ? focusLeft / Math.max(1, focusTotalSeconds) : 1;
+  const progress = mode === "focus" ? focusLeft / Math.max(1, focusTotalSeconds) : 1;
   const dashOffset = circumference * (1 - progress);
 
-  const dark = {
-    bg: "#0E0C14",
-    card: "#171523",
-    card2: "#1E1B2E",
-    text: "#F5F4FA",
-    muted: "#A8A4C2",
-    border: "#2C2842",
-  };
-
   return (
-    <View
-      style={[
-        styles.container,
-        { backgroundColor: isDark ? dark.bg : colors.bg },
-      ]}
-    >
-      <Text style={[styles.title, { color: isDark ? dark.text : colors.text }]}>
-        Pomodoro
-      </Text>
+    <View style={[styles.container, { backgroundColor: isDark ? dark.bg : colors.bg }]}>
+      <Text style={[styles.title, { color: isDark ? dark.text : colors.text }]}>Pomodoro</Text>
 
       {/* Mode pills */}
       <View style={styles.modeRow}>
@@ -230,9 +234,7 @@ export default function PomodoroScreen() {
             <Text style={[styles.smallLabel, { color: isDark ? dark.muted : colors.muted }]}>
               {mode === "focus" ? "Time left" : "Stopwatch"}
             </Text>
-            <Text style={styles.miniHint}>
-              {mode === "focus" ? "Stay focused ✨" : "Breathe ☁️"}
-            </Text>
+            <Text style={styles.miniHint}>{mode === "focus" ? "Stay focused ✨" : "Breathe ☁️"}</Text>
           </View>
         </View>
 
@@ -264,6 +266,7 @@ export default function PomodoroScreen() {
         </View>
       </View>
 
+      {/* ✅ Saved sessions (preview) */}
       <View
         style={[
           styles.noteBox,
@@ -273,9 +276,24 @@ export default function PomodoroScreen() {
           },
         ]}
       >
-        <Text style={[styles.noteText, { color: isDark ? dark.muted : colors.muted }]}>
-          Focus ends → auto switches to Break stopwatch. (Next: save sessions)
+        <Text style={[styles.noteTitle, { color: isDark ? dark.text : colors.text }]}>
+          Saved Focus Sessions
         </Text>
+
+        {sessions.length === 0 ? (
+          <Text style={[styles.noteText, { color: isDark ? dark.muted : colors.muted }]}>
+            No sessions yet. Complete a focus timer to save one.
+          </Text>
+        ) : (
+          sessions.slice(0, 4).map((s) => (
+            <Text
+              key={s.id}
+              style={[styles.noteText, { color: isDark ? dark.muted : colors.muted }]}
+            >
+              • {s.minutes} min — {s.completedAt}
+            </Text>
+          ))
+        )}
       </View>
     </View>
   );
@@ -379,6 +397,8 @@ const styles = StyleSheet.create({
     borderColor: colors.border,
     borderRadius: 18,
     padding: 12,
+    gap: 6,
   },
-  noteText: { color: colors.muted, fontWeight: "700", textAlign: "center", lineHeight: 18 },
+  noteTitle: { fontWeight: "900", fontSize: 13 },
+  noteText: { fontWeight: "700", lineHeight: 18 },
 });
