@@ -15,7 +15,6 @@ const INITIAL = [
 
 export default function TasksScreen({ navigation }) {
   const isDark = useThemeStore((s) => s.isDark);
-
   const dark = {
     bg: "#0E0C14",
     card: "#171523",
@@ -28,12 +27,21 @@ export default function TasksScreen({ navigation }) {
   const [filter, setFilter] = React.useState("Tasks");
   const [tasks, setTasks] = React.useState(INITIAL);
 
+  const addTask = ({ title, dueLabel, desc }) => {
+    const id = `t${Date.now()}`;
+    const newTask = {
+      id,
+      title,
+      dueLabel: dueLabel || "—",
+      desc: desc || "",
+      completed: false,
+    };
+    setTasks((prev) => [newTask, ...prev]); 
+  };
+
   const onToggleComplete = (id) => {
     setTasks((prev) =>
-      prev.map((t) => {
-        if (t.id !== id) return t;
-        return { ...t, completed: !t.completed };
-      })
+      prev.map((t) => (t.id === id ? { ...t, completed: !t.completed } : t))
     );
   };
 
@@ -111,7 +119,7 @@ export default function TasksScreen({ navigation }) {
 
       {/* Floating + button */}
       <Pressable
-        onPress={() => navigation.navigate("AddTask")}
+        onPress={() => navigation.navigate("AddTask", { onAdd: addTask })}  
         style={({ pressed }) => [
           styles.fab,
           pressed && { transform: [{ scale: 0.98 }], opacity: 0.95 },

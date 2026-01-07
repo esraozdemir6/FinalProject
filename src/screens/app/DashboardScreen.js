@@ -26,7 +26,7 @@ export default function DashboardScreen({ navigation }) {
   const fake = {
     tasksToday: 3,
     completedWeek: 7,
-    focusMinutesToday: 45,
+    focusMinutesToday: 4.35,
     quote: "Small steps every day lead to big results.",
     author: "StudyFlow",
   };
@@ -62,7 +62,7 @@ export default function DashboardScreen({ navigation }) {
 
       <View style={styles.row}>
         <SummaryCard
-          label="Focus Minutes Today"
+          label="Focus Hours Today"
           value={fake.focusMinutesToday}
           helper="Pomodoro sessions"
         />

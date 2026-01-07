@@ -1,12 +1,13 @@
 import React from "react";
-import { View, Text, StyleSheet, TextInput } from "react-native";
+import { View, Text, StyleSheet, TextInput, Alert } from "react-native";
 import { colors } from "../../theme/colors";
 import { useThemeStore } from "../../store/themeStore";
 import PrimaryButton from "../../components/PrimaryButton";
 
-export default function AddTaskScreen({ navigation }) {
-  const isDark = useThemeStore((s) => s.isDark);
+export default function AddTaskScreen({ navigation, route }) {
+  const onAdd = route?.params?.onAdd;
 
+  const isDark = useThemeStore((s) => s.isDark);
   const dark = {
     bg: "#0E0C14",
     card: "#0B0B10",
@@ -20,24 +21,29 @@ export default function AddTaskScreen({ navigation }) {
   const [due, setDue] = React.useState("");
   const [desc, setDesc] = React.useState("");
 
+  const save = () => {
+    if (!title.trim()) {
+      Alert.alert("Missing info", "Please enter a task title.");
+      return;
+    }
+
+    onAdd?.({
+      title: title.trim(),
+      dueLabel: due.trim() || "—",
+      desc: desc.trim(),
+    });
+
+    navigation.goBack();
+  };
+
   return (
-    <View
-      style={[
-        styles.container,
-        { backgroundColor: isDark ? dark.bg : colors.bg },
-      ]}
-    >
-      <Text style={[styles.title, { color: isDark ? dark.text : colors.text }]}>
-        Add Task
-      </Text>
+    <View style={[styles.container, { backgroundColor: isDark ? dark.bg : colors.bg }]}>
+      <Text style={[styles.title, { color: isDark ? dark.text : colors.text }]}>Add Task</Text>
       <Text style={[styles.sub, { color: isDark ? dark.muted : colors.muted }]}>
         Create a new task
       </Text>
 
-      {/* Title */}
-      <Text style={[styles.label, { color: isDark ? dark.muted : colors.muted }]}>
-        Title
-      </Text>
+      <Text style={[styles.label, { color: isDark ? dark.muted : colors.muted }]}>Title</Text>
       <TextInput
         value={title}
         onChangeText={setTitle}
@@ -53,10 +59,7 @@ export default function AddTaskScreen({ navigation }) {
         ]}
       />
 
-      {/* Due */}
-      <Text style={[styles.label, { color: isDark ? dark.muted : colors.muted }]}>
-        Due
-      </Text>
+      <Text style={[styles.label, { color: isDark ? dark.muted : colors.muted }]}>Due</Text>
       <TextInput
         value={due}
         onChangeText={setDue}
@@ -72,10 +75,7 @@ export default function AddTaskScreen({ navigation }) {
         ]}
       />
 
-      {/* Description */}
-      <Text style={[styles.label, { color: isDark ? dark.muted : colors.muted }]}>
-        Description
-      </Text>
+      <Text style={[styles.label, { color: isDark ? dark.muted : colors.muted }]}>Description</Text>
       <TextInput
         value={desc}
         onChangeText={setDesc}
@@ -94,13 +94,9 @@ export default function AddTaskScreen({ navigation }) {
       />
 
       <View style={{ height: 16 }} />
-      <PrimaryButton title="Save" onPress={() => navigation.goBack()} />
+      <PrimaryButton title="Save" onPress={save} />
       <View style={{ height: 10 }} />
-      <PrimaryButton
-        title="Cancel"
-        variant="ghost"
-        onPress={() => navigation.goBack()}
-      />
+      <PrimaryButton title="Cancel" variant="ghost" onPress={() => navigation.goBack()} />
     </View>
   );
 }
@@ -126,8 +122,5 @@ const styles = StyleSheet.create({
     color: colors.text,
     fontWeight: "700",
   },
-  textArea: {
-    height: 90,
-    textAlignVertical: "top",
-  },
+  textArea: { height: 90, textAlignVertical: "top" },
 });
