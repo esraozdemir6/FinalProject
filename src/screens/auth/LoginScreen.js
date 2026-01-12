@@ -1,5 +1,6 @@
 import React from "react";
-import { View, Text, TextInput, StyleSheet, Image, SafeAreaView } from "react-native";
+import { View, Text, TextInput, StyleSheet, Image, KeyboardAvoidingView, Platform, TouchableWithoutFeedback, Keyboard, ScrollView, Alert,
+} from "react-native";
 import { colors } from "../../theme/colors";
 import { useAuthStore } from "../../store/authStore";
 import PrimaryButton from "../../components/PrimaryButton";
@@ -9,63 +10,120 @@ export default function LoginScreen({ navigation }) {
   const [email, setEmail] = React.useState("");
   const [password, setPassword] = React.useState("");
 
+  const [emailTouched, setEmailTouched] = React.useState(false);
+
+  const isEmailValid = React.useMemo(() => {
+    const v = email.trim();
+    return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(v);
+  }, [email]);
+
+  const emailError = React.useMemo(() => {
+    if (!emailTouched) return "";
+    if (!email.trim()) return "Email is required.";
+    if (!isEmailValid) return "Please enter a valid email address. (e.g. email@example.com)";
+    return "";
+  }, [emailTouched, email, isEmailValid]);
+
+  const handleLogin = () => {
+    setEmailTouched(true);
+
+    if (!email.trim()) {
+      Alert.alert("Hata", "Email is required.");
+      return;
+    }
+
+    if (!isEmailValid) {
+      Alert.alert("Hata", "Please enter a valid email address. (e.g. email@example.com)");
+      return;
+    }
+
+    login(email.trim(), password);
+  };
+
   return (
-    <View style={styles.container}>
-      {/* Top brand area */}
-      <View style={styles.brandWrap}>
-        <Text style={styles.brandTitle}>StudyFlow</Text>
-        <Text style={styles.brandTagline}>Plan. Focus. Achieve.</Text>
+    <TouchableWithoutFeedback onPress={Keyboard.dismiss} accessible={false}>
+      <KeyboardAvoidingView
+        style={{ flex: 1 }}
+        behavior={Platform.OS === "ios" ? "padding" : "height"}
+        keyboardVerticalOffset={Platform.OS === "ios" ? 24 : 0}
+      >
+        {/*  ScrollView */}
+        <ScrollView
+          contentContainerStyle={styles.container}
+          keyboardShouldPersistTaps="handled"
+          showsVerticalScrollIndicator={false}
+        >
+          {/* Top brand area */}
+          <View style={styles.brandWrap}>
+            <Text style={styles.brandTitle}>StudyFlow</Text>
+            <Text style={styles.brandTagline}>Plan. Focus. Achieve.</Text>
 
-        <View style={styles.logoWrap}>
-          <Image
-            source={require("../../../assets/bear.png")}
-            style={styles.logo}
-            resizeMode="contain"
-          />
-        </View>
-      </View>
+            <View style={styles.logoWrap}>
+              <Image
+                source={require("../../../assets/bear.png")}
+                style={styles.logo}
+                resizeMode="contain"
+              />
+            </View>
+          </View>
 
-      {/* Sign in card */}
-      <View style={styles.card}>
-        <Text style={styles.cardTitle}>Sign in</Text>
-        <Text style={styles.cardSub}>Welcome back — let’s get things done ✨</Text>
+          {/* Sign in card */}
+          <View style={styles.card}>
+            <Text style={styles.cardTitle}>Sign in</Text>
+            <Text style={styles.cardSub}>Welcome back — let’s get things done ✨</Text>
 
-        <Text style={styles.label}>Email</Text>
-        <TextInput
-          style={styles.input}
-          value={email}
-          onChangeText={setEmail}
-          placeholder="email@example.com"
-          placeholderTextColor={colors.muted}
-          autoCapitalize="none"
-        />
+            <Text style={styles.label}>Email</Text>
+            <TextInput
+              style={[
+                styles.input,
+                emailTouched && !isEmailValid ? styles.inputError : null,
+              ]}
+              value={email}
+              onChangeText={(t) => {
+                setEmail(t);
+              }}
+              onBlur={() => setEmailTouched(true)}
+              placeholder="email@example.com"
+              placeholderTextColor={colors.muted}
+              autoCapitalize="none"
+              keyboardType="email-address"
+              autoCorrect={false}
+              returnKeyType="next"
+            />
 
-        <Text style={styles.label}>Password</Text>
-        <TextInput
-          style={styles.input}
-          value={password}
-          onChangeText={setPassword}
-          placeholder="••••••••"
-          placeholderTextColor={colors.muted}
-          secureTextEntry
-        />
+            {/* inline error text  */}
+            {!!emailError && <Text style={styles.errorText}>{emailError}</Text>}
 
-        <View style={{ height: 16 }} />
-        <PrimaryButton title="Login" onPress={() => login(email, password)} />
-        <View style={{ height: 10 }} />
-        <PrimaryButton
-          title="Create account"
-          variant="ghost"
-          onPress={() => navigation.navigate("Register")}
-        />
-      </View>
-    </View>
+            <Text style={styles.label}>Password</Text>
+            <TextInput
+              style={styles.input}
+              value={password}
+              onChangeText={setPassword}
+              placeholder="••••••••"
+              placeholderTextColor={colors.muted}
+              secureTextEntry
+              returnKeyType="done"
+              onSubmitEditing={handleLogin}
+            />
+
+            <View style={{ height: 16 }} />
+            <PrimaryButton title="Login" onPress={handleLogin} />
+            <View style={{ height: 10 }} />
+            <PrimaryButton
+              title="Create account"
+              variant="ghost"
+              onPress={() => navigation.navigate("Register")}
+            />
+          </View>
+        </ScrollView>
+      </KeyboardAvoidingView>
+    </TouchableWithoutFeedback>
   );
 }
 
 const styles = StyleSheet.create({
   container: {
-    flex: 1,
+    flexGrow: 1, 
     backgroundColor: colors.bg,
     paddingHorizontal: 18,
     paddingBottom: 18,
@@ -137,5 +195,14 @@ const styles = StyleSheet.create({
     padding: 12,
     borderRadius: 16,
     color: colors.text,
+  },
+
+  inputError: {
+    borderColor: "#E5484D",
+  },
+  errorText: {
+    marginTop: 8,
+    color: "#E5484D",
+    fontWeight: "700",
   },
 });

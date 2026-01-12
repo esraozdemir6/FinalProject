@@ -39,6 +39,27 @@ export default function DashboardScreen({ navigation }) {
         "What is State? State in mobile programming refers to data that can change while the application is running and directly affects what is displayed on the user interface.",
       dateLabel: todayLabel(),
     },
+     {
+    id: "n2",
+    course: "Software Engineering",
+    text:
+      "Agile is an iterative development approach that emphasizes flexibility, collaboration, and customer feedback.",
+    dateLabel: todayLabel(),
+  },
+  {
+    id: "n3",
+    course: "Artificial Intelligence",
+    text:
+      "Machine learning is a subset of artificial intelligence that enables systems to learn from data and improve performance without being explicitly programmed.",
+    dateLabel: todayLabel(),
+  },
+  {
+    id: "n4",
+    course: "Data Structures",
+    text:
+      "Stacks and queues are fundamental data structures used to manage and organize data efficiently based on LIFO and FIFO principles.",
+    dateLabel: todayLabel(),
+  },
   ]);
 
   const addNote = ({ course, text }) => {

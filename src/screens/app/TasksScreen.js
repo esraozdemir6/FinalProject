@@ -11,6 +11,17 @@ const INITIAL = [
   { id: "2", title: "Take notes for exam", dueLabel: "Today", completed: false },
   { id: "3", title: "Study for Image Processing quiz", dueLabel: "Tomorrow", completed: false },
   { id: "4", title: "Organize week plan", dueLabel: "This week", completed: true },
+  { id: "5", title: "Prepare presentation slides", dueLabel: "Tomorrow", completed: false },
+  { id: "6", title: "Review Mobile Programming lecture", dueLabel: "Today", completed: false },
+  { id: "7", title: "Complete StudyFlow UI polish", dueLabel: "This week", completed: false },
+  { id: "8", title: "Read AI research article", dueLabel: "This week", completed: false },
+  { id: "9", title: "Update GitHub repository", dueLabel: "Today", completed: true },
+  { id: "10", title: "Practice exam questions", dueLabel: "Tomorrow", completed: false },
+  { id: "11", title: "Fix login validation bugs", dueLabel: "Today", completed: false },
+  { id: "12", title: "Write project documentation", dueLabel: "This week", completed: false },
+  { id: "13", title: "Refactor task components", dueLabel: "This week", completed: true },
+  { id: "14", title: "Test app on physical device", dueLabel: "Tomorrow", completed: false },
+  { id: "15", title: "Backup project files", dueLabel: "This week", completed: false },
 ];
 
 export default function TasksScreen({ navigation }) {
