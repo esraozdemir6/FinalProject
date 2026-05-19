@@ -1,7 +1,3 @@
-# Student Name: Esra Özdemir  
-# Student ID: 220408014  
-# Git: <https://github.com/esraozdemir6/FinalProject>
-
 # StudyFlow
 
 StudyFlow is a React Native mobile application developed as part of the Mobile Programming course to help students organize their study routines more effectively. The application brings together task management, study notes, and focus sessions in a single platform, reducing the need to use multiple tools.
@@ -85,7 +81,7 @@ studyflow/
 
 2. **Clone the Repository**
 
-git clone https://github.com/esraozdemir6/FinalProject  
+git clone https://github.com/esraozdemir6/StudyFlow 
 cd StudyFlow
 
 3. **Install Dependencies**
